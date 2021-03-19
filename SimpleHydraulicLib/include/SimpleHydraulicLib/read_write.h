@@ -5,6 +5,12 @@
 #ifndef SIMPLEHYDRAULICNETWORK_READ_WRITE_H
 #define SIMPLEHYDRAULICNETWORK_READ_WRITE_H
 
+#include <fstream>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
+
 void write_csv(std::string filename, std::vector<std::pair<std::string, std::vector<double>>> dataset) {
     // Make a CSV file with one or more columns of integer values
     // Each column of data is represented by the pair <column name, column data>
@@ -16,27 +22,23 @@ void write_csv(std::string filename, std::vector<std::pair<std::string, std::vec
     std::ofstream myFile(filename);
 
     // Send column names to the stream
-    for(int j = 0; j < dataset.size(); ++j)
-    {
+    for (std::size_t j = 0; j < dataset.size(); ++j) {
         myFile << dataset.at(j).first;
-        if(j != dataset.size() - 1) myFile << ","; // No comma at end of line
+        if (j != dataset.size() - 1) myFile << ",";// No comma at end of line
     }
     myFile << "\n";
 
     // Send data to the stream
-    for(int i = 0; i < dataset.at(0).second.size(); ++i)
-    {
-        for(int j = 0; j < dataset.size(); ++j)
-        {
+    for (std::size_t i = 0; i < dataset.at(0).second.size(); ++i) {
+        for (std::size_t j = 0; j < dataset.size(); ++j) {
             myFile << dataset.at(j).second.at(i);
-            if(j != dataset.size() - 1) myFile << ","; // No comma at end of line
+            if (j != dataset.size() - 1) myFile << ",";// No comma at end of line
         }
         myFile << "\n";
     }
-
 }
 
-inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::string filename){
+inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::string filename) {
     // Reads a CSV file into a vector of <string, vector<int>> pairs where
     // each pair represents <column name, column values>
 
@@ -47,15 +49,14 @@ inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::st
     std::ifstream myFile(filename);
 
     // Make sure the file is open
-    if(!myFile/*.is_open()*/) throw std::runtime_error("Could not open file");
+    if (!myFile /*.is_open()*/) throw std::runtime_error("Could not open file");
 
     // Helper vars
     std::string line, colname;
     double val;
 
     // Read the column names
-    if(myFile.good())
-    {
+    if (myFile.good()) {
 
         // Extract the first line in the file
         std::getline(myFile, line);
@@ -64,16 +65,15 @@ inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::st
         std::stringstream ss(line);
 
         // Extract each column name
-        while(std::getline(ss, colname, ',')){
+        while (std::getline(ss, colname, ',')) {
 
             // Initialize and add <colname, int vector> pairs to result
-            result.push_back({colname, std::vector<double> {}});
+            result.push_back({colname, std::vector<double>{}});
         }
     }
 
     // Read data, line by line
-    while(std::getline(myFile, line))
-    {
+    while (std::getline(myFile, line)) {
         // Create a stringstream of the current line
         std::stringstream ss(line);
 
@@ -81,13 +81,13 @@ inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::st
         int colIdx = 0;
 
         // Extract each integer
-        while(ss >> val){
+        while (ss >> val) {
 
             // Add the current integer to the 'colIdx' column's values vector
             result.at(colIdx).second.push_back(val);
 
             // If the next token is a comma, ignore it and move on
-            if(ss.peek() == ',') ss.ignore();
+            if (ss.peek() == ',') ss.ignore();
 
             // Increment the column index
             colIdx++;
@@ -101,5 +101,4 @@ inline std::vector<std::pair<std::string, std::vector<double>>> read_csv(std::st
 }
 
 
-
-#endif //SIMPLEHYDRAULICNETWORK_READ_WRITE_H
+#endif//SIMPLEHYDRAULICNETWORK_READ_WRITE_H
